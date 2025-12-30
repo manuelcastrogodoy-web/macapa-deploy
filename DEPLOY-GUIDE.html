@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MACAPA - Guía de Deploy para Manu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        .step {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .step h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .copy-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .config-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .config-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .warning {
+            background: #fed7d7;
+            border: 2px solid #fc8181;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background: #c6f6d5;
+            border: 2px solid #68d391;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .info {
+            background: #bee3f8;
+            border: 2px solid #63b3ed;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .url-box {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .checklist li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 MACAPA Deploy Guide</h1>
+            <p>Guía completa para Manuel Castro Godoy</p>
+            <p><strong>Tiempo estimado:</strong> 15-20 minutos</p>
+        </div>
+
+        <!-- Información Previa -->
+        <div class="step">
+            <h2><span class="step-number">ℹ️</span>Información de Tu Deploy</h2>
+            <div class="info">
+                <strong>🎯 URLs que tendrás después del deploy:</strong>
+                <div class="url-box">
+                    🌐 Dashboard: https://manu-macapa-dashboard.onrender.com
+                </div>
+                <div class="url-box">
+                    🔗 API: https://manu-macapa-api.onrender.com
+                </div>
+                <div class="url-box">
+                    📡 Webhook Zapier: https://manu-macapa-api.onrender.com/api/webhooks/zapier/agent-activity
+                </div>
+            </div>
+            
+            <div class="success">
+                <strong>✅ Ya configurado para ti:</strong>
+                <ul class="checklist">
+                    <li>Gemini API Key incluida</li>
+                    <li>Variables de entorno configuradas</li>
+                    <li>CORS y seguridad configurados</li>
+                    <li>Rate limiting activado</li>
+                    <li>Logs automáticos</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Paso 1: Preparar Git -->
+        <div class="step">
+            <h2><span class="step-number">1</span>Preparar Repositorio Git</h2>
+            <p>Primero vamos a inicializar Git y preparar los archivos:</p>
+            
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyToClipboard('git-commands')">Copiar</button>
+                <div id="git-commands">cd macapa-app
+git init
+git add .
+git commit -m "MACAPA - Sistema completo listo para deploy"</div>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Ejecuta estos comandos en tu terminal desde la carpeta donde tienes el proyecto MACAPA.
+            </div>
+        </div>
+
+        <!-- Paso 2: Crear Repositorio GitHub -->
+        <div class="step">
+            <h2><span class="step-number">2</span>Crear Repositorio en GitHub</h2>
+            <p>Ahora vamos a crear el repositorio en GitHub:</p>
+            
+            <ol style="margin-left: 20px; margin-top: 15px;">
+                <li>Ve a: <a href="https://github.com/manuelcastrogodoy-web" target="_blank" class="btn">🔗 Tu GitHub</a></li>
+                <li>Click en <strong>"New repository"</strong> (botón verde)</li>
+                <li>Nombre del repositorio: <code>macapa-app</code></li>
+                <li><strong>NO</strong> marcar "Initialize this repository with a README"</li>
+                <li>Click <strong>"Create repository"</strong></li>
+            </ol>
+            
+            <div class="info">
+                <strong>💡 Tip:</strong> GitHub te mostrará comandos para conectar tu repositorio local. Ignóralos, usa los de abajo.
+            </div>
+        </div>
+
+        <!-- Paso 3: Subir Código -->
+        <div class="step">
+            <h2><span class="step-number">3</span>Subir Código a GitHub</h2>
+            <p>Conecta tu repositorio local con GitHub y sube el código:</p>
+            
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyToClipboard('github-commands')">Copiar</button>
+                <div id="github-commands">git remote add origin https://github.com/manuelcastrogodoy-web/macapa-app.git
+git branch -M main
+git push -u origin main</div>
+            </div>
+            
+            <div class="success">
+                <strong>✅ Resultado esperado:</strong> Deberías ver tu código subido en GitHub en la URL: https://github.com/manuelcastrogodoy-web/macapa-app
+            </div>
+        </div>
+
+        <!-- Paso 4: Deploy Backend -->
+        <div class="step">
+            <h2><span class="step-number">4</span>Deploy Backend en Render</h2>
+            <p>Ahora vamos a desplegar la API backend:</p>
+            
+            <ol style="margin-left: 20px; margin-top: 15px;">
+                <li>Ve a: <a href="https://render.com" target="_blank" class="btn">🔗 Render.com</a></li>
+                <li>Crear cuenta gratis (usa tu GitHub para login rápido)</li>
+                <li>Click <strong>"New +"</strong> → <strong>"Web Service"</strong></li>
+                <li>Conectar GitHub y seleccionar repositorio <code>macapa-app</code></li>
+                <li>Configurar como se muestra abajo:</li>
+            </ol>
+            
+            <div class="config-box">
+                <div class="config-title">⚙️ Configuración Backend:</div>
+                <strong>Name:</strong> manu-macapa-api<br>
+                <strong>Region:</strong> Oregon (US West)<br>
+                <strong>Branch:</strong> main<br>
+                <strong>Root Directory:</strong> backend<br>
+                <strong>Runtime:</strong> Node<br>
+                <strong>Build Command:</strong> npm install<br>
+                <strong>Start Command:</strong> npm start
+            </div>
+            
+            <div class="config-box">
+                <div class="config-title">🔑 Variables de Entorno (copiar y pegar):</div>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard('backend-env')">Copiar</button>
+                    <div id="backend-env">NODE_ENV=production
+GEMINI_API_KEY=AIzaSyB8J-mt5VEkrSL3lwh68an_Ni9pbU4d29Q
+ZAPIER_WEBHOOK_SECRET=manu_macapa_webhook_secret_2024
+ALLOWED_ORIGINS=https://manu-macapa-dashboard.onrender.com
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+LOG_LEVEL=info</div>
+                </div>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ Importante:</strong> Copia cada variable de entorno una por una en Render. Cada línea es una variable separada.
+            </div>
+        </div>
+
+        <!-- Paso 5: Deploy Frontend -->
+        <div class="step">
+            <h2><span class="step-number">5</span>Deploy Frontend en Render</h2>
+            <p>Ahora vamos a desplegar el dashboard frontend:</p>
+            
+            <ol style="margin-left: 20px; margin-top: 15px;">
+                <li>En Render, click <strong>"New +"</strong> → <strong>"Static Site"</strong></li>
+                <li>Seleccionar el mismo repositorio <code>macapa-app</code></li>
+                <li>Configurar como se muestra abajo:</li>
+            </ol>
+            
+            <div class="config-box">
+                <div class="config-title">⚙️ Configuración Frontend:</div>
+                <strong>Name:</strong> manu-macapa-dashboard<br>
+                <strong>Branch:</strong> main<br>
+                <strong>Root Directory:</strong> frontend<br>
+                <strong>Build Command:</strong> npm install && npm run build<br>
+                <strong>Publish Directory:</strong> build
+            </div>
+            
+            <div class="config-box">
+                <div class="config-title">🔑 Variables de Entorno Frontend:</div>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard('frontend-env')">Copiar</button>
+                    <div id="frontend-env">REACT_APP_API_URL=https://manu-macapa-api.onrender.com
+REACT_APP_ENVIRONMENT=production
+GENERATE_SOURCEMAP=false</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 6: Verificar Deploy -->
+        <div class="step">
+            <h2><span class="step-number">6</span>Verificar que Todo Funciona</h2>
+            <p>Una vez que ambos deploys estén completos (5-10 minutos), verifica:</p>
+            
+            <div class="success">
+                <strong>🧪 Tests de Verificación:</strong>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>API Health Check:</strong> <a href="https://manu-macapa-api.onrender.com/health" target="_blank" class="btn btn-success">Probar API</a></li>
+                    <li><strong>Dashboard:</strong> <a href="https://manu-macapa-dashboard.onrender.com" target="_blank" class="btn btn-success">Abrir Dashboard</a></li>
+                    <li><strong>Webhook Zapier:</strong> Usar URL en tu Zap</li>
+                </ol>
+            </div>
+            
+            <div class="info">
+                <strong>✅ Respuesta esperada del API Health Check:</strong>
+                <div class="code-block">
+{
+  "status": "OK",
+  "timestamp": "2024-12-23T...",
+  "uptime": 123,
+  "environment": "production"
+}
+                </div>
+            </div>
+        </div>
+
+        <!-- Paso 7: Configurar Zapier -->
+        <div class="step">
+            <h2><span class="step-number">7</span>Configurar Zapier</h2>
+            <p>Finalmente, actualiza tu Zap con la nueva URL:</p>
+            
+            <ol style="margin-left: 20px; margin-top: 15px;">
+                <li>Ve a tu Zap (ID: 339995837)</li>
+                <li>Editar paso "Webhooks by Zapier - POST"</li>
+                <li>Cambiar URL a:</li>
+            </ol>
+            
+            <div class="url-box">
+                https://manu-macapa-api.onrender.com/api/webhooks/zapier/agent-activity
+            </div>
+            
+            <div class="config-box">
+                <div class="config-title">⚙️ Configuración Webhook Zapier:</div>
+                <strong>Method:</strong> POST<br>
+                <strong>Content-Type:</strong> application/json<br>
+                <strong>URL:</strong> https://manu-macapa-api.onrender.com/api/webhooks/zapier/agent-activity
+            </div>
+        </div>
+
+        <!-- Resultado Final -->
+        <div class="step">
+            <h2><span class="step-number">🎉</span>¡Listo! Tu Sistema MACAPA Está Funcionando</h2>
+            <div class="success">
+                <strong>🎯 Lo que tienes ahora:</strong>
+                <ul class="checklist">
+                    <li>Sistema MACAPA funcionando 24/7</li>
+                    <li>Dashboard profesional accesible desde cualquier lugar</li>
+                    <li>API completa para auditorías automáticas</li>
+                    <li>Webhook listo para Zapier</li>
+                    <li>Integración IA con Gemini 2.5 Flash</li>
+                    <li>Generación automática de auditorías forenses</li>
+                </ul>
+            </div>
+            
+            <div class="url-box">
+                🌐 Tu Dashboard: https://manu-macapa-dashboard.onrender.com
+            </div>
+            
+            <div class="info">
+                <strong>📊 Próximos pasos:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Probar el dashboard y todas sus funciones</li>
+                    <li>Configurar tu Zap con la nueva URL</li>
+                    <li>Crear tu primera auditoría automática</li>
+                    <li>¡Disfrutar de tu sistema automatizado!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                // Cambiar texto del botón temporalmente
+                const button = element.parentNode.querySelector('.copy-btn');
+                const originalText = button.textContent;
+                button.textContent = '¡Copiado!';
+                button.style.background = '#48bb78';
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "macapa-system",
+  "version": "1.0.0",
+  "description": "MACAPA - Sistema de Auditorías Forenses Automatizadas",
+  "main": "backend/server.js",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "deploy": "npm run install-all && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manuelcastrogodoy-web/macapa-app.git"
+  },
+  "keywords": [
+    "audit",
+    "forensic",
+    "ai",
+    "zapier",
+    "automation",
+    "gemini"
+  ],
+  "author": "Manuel Castro Godoy",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

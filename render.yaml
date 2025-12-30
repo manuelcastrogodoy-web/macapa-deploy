@@ -1,0 +1,39 @@
+# Render.com deployment configuration
+services:
+  # Backend API Service
+  - type: web
+    name: manu-macapa-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ZAPIER_WEBHOOK_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://manu-macapa-dashboard.onrender.com,https://manuelcastrogodoy-web.github.io
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "100"
+      - key: LOG_LEVEL
+        value: info
+
+  # Frontend Static Site
+  - type: static
+    name: manu-macapa-dashboard
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://manu-macapa-api.onrender.com
+      - key: REACT_APP_ENVIRONMENT
+        value: production
