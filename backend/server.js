@@ -11,6 +11,7 @@ const aiRoutes = require('./routes/ai');
 const dashboardRoutes = require('./routes/dashboard');
 const clickupRoutes = require('./routes/clickup');
 const orchestratorRoutes = require('./routes/orchestrator');
+const superagentRoutes = require('./routes/superagent');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -58,6 +59,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/clickup', clickupRoutes);
 app.use('/api/orchestrator', orchestratorRoutes);
+app.use('/api/superagent', superagentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
