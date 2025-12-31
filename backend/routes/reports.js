@@ -41,8 +41,102 @@ let reportsDatabase = [
     priority: 'low',
     wordCount: 1800,
     estimatedReadTime: 9
+  },
+  {
+    id: '4',
+    title: 'Auditoría de Seguridad - Infraestructura Cloud',
+    client: 'CloudServices Inc',
+    type: 'forensic_audit',
+    status: 'pending',
+    createdAt: '2024-12-23T11:00:00Z',
+    priority: 'high',
+    wordCount: 0,
+    estimatedReadTime: 0
+  },
+  {
+    id: '5',
+    title: 'Consultoría Estratégica - Plan 2025',
+    client: 'StartupTech',
+    type: 'consultancy',
+    status: 'completed',
+    createdAt: '2024-12-19T14:00:00Z',
+    completedAt: '2024-12-23T10:00:00Z',
+    priority: 'medium',
+    wordCount: 4200,
+    estimatedReadTime: 21
   }
 ];
+
+/**
+ * GET /api/reports/stats/dashboard
+ * Obtiene estadísticas para el dashboard
+ * IMPORTANTE: Esta ruta debe estar ANTES de /:id para evitar conflictos
+ */
+router.get('/stats/dashboard', (req, res) => {
+  try {
+    logger.info('Dashboard stats requested');
+    
+    const stats = {
+      totalReports: reportsDatabase.length,
+      
+      byStatus: {
+        completed: reportsDatabase.filter(r => r.status === 'completed').length,
+        in_progress: reportsDatabase.filter(r => r.status === 'in_progress').length,
+        pending: reportsDatabase.filter(r => r.status === 'pending').length
+      },
+      
+      byType: {
+        forensic_audit: reportsDatabase.filter(r => r.type === 'forensic_audit').length,
+        consultancy: reportsDatabase.filter(r => r.type === 'consultancy').length,
+        report: reportsDatabase.filter(r => r.type === 'report').length
+      },
+      
+      byPriority: {
+        high: reportsDatabase.filter(r => r.priority === 'high').length,
+        medium: reportsDatabase.filter(r => r.priority === 'medium').length,
+        low: reportsDatabase.filter(r => r.priority === 'low').length
+      },
+      
+      recentActivity: reportsDatabase
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+        .map(report => ({
+          id: report.id,
+          title: report.title,
+          client: report.client,
+          type: report.type,
+          status: report.status,
+          createdAt: report.createdAt
+        })),
+      
+      productivity: {
+        averageWordCount: Math.round(
+          reportsDatabase.reduce((sum, r) => sum + (r.wordCount || 0), 0) / reportsDatabase.length
+        ),
+        averageReadTime: Math.round(
+          reportsDatabase.reduce((sum, r) => sum + (r.estimatedReadTime || 0), 0) / reportsDatabase.length
+        ),
+        completionRate: Math.round(
+          (reportsDatabase.filter(r => r.status === 'completed').length / reportsDatabase.length) * 100
+        )
+      }
+    };
+
+    res.json({
+      success: true,
+      data: stats,
+      generatedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    logger.error('Error generating dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate dashboard statistics',
+      message: error.message
+    });
+  }
+});
 
 /**
  * GET /api/reports
@@ -168,74 +262,6 @@ router.get('/:id', (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch report',
-      message: error.message
-    });
-  }
-});
-
-/**
- * GET /api/reports/stats/dashboard
- * Obtiene estadísticas para el dashboard
- */
-router.get('/stats/dashboard', (req, res) => {
-  try {
-    const stats = {
-      totalReports: reportsDatabase.length,
-      
-      byStatus: {
-        completed: reportsDatabase.filter(r => r.status === 'completed').length,
-        in_progress: reportsDatabase.filter(r => r.status === 'in_progress').length,
-        pending: reportsDatabase.filter(r => r.status === 'pending').length
-      },
-      
-      byType: {
-        forensic_audit: reportsDatabase.filter(r => r.type === 'forensic_audit').length,
-        consultancy: reportsDatabase.filter(r => r.type === 'consultancy').length,
-        report: reportsDatabase.filter(r => r.type === 'report').length
-      },
-      
-      byPriority: {
-        high: reportsDatabase.filter(r => r.priority === 'high').length,
-        medium: reportsDatabase.filter(r => r.priority === 'medium').length,
-        low: reportsDatabase.filter(r => r.priority === 'low').length
-      },
-      
-      recentActivity: reportsDatabase
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5)
-        .map(report => ({
-          id: report.id,
-          title: report.title,
-          client: report.client,
-          type: report.type,
-          status: report.status,
-          createdAt: report.createdAt
-        })),
-      
-      productivity: {
-        averageWordCount: Math.round(
-          reportsDatabase.reduce((sum, r) => sum + (r.wordCount || 0), 0) / reportsDatabase.length
-        ),
-        averageReadTime: Math.round(
-          reportsDatabase.reduce((sum, r) => sum + (r.estimatedReadTime || 0), 0) / reportsDatabase.length
-        ),
-        completionRate: Math.round(
-          (reportsDatabase.filter(r => r.status === 'completed').length / reportsDatabase.length) * 100
-        )
-      }
-    };
-
-    res.json({
-      success: true,
-      data: stats,
-      generatedAt: new Date().toISOString()
-    });
-
-  } catch (error) {
-    logger.error('Error generating dashboard stats:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to generate dashboard statistics',
       message: error.message
     });
   }
