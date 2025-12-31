@@ -13,6 +13,7 @@ const clickupRoutes = require('./routes/clickup');
 const orchestratorRoutes = require('./routes/orchestrator');
 const superagentRoutes = require('./routes/superagent');
 const smartExecutorRoutes = require('./routes/smartexecutor');
+const zapierIntegrationRoutes = require('./routes/zapier-integration');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -62,6 +63,7 @@ app.use('/api/clickup', clickupRoutes);
 app.use('/api/orchestrator', orchestratorRoutes);
 app.use('/api/superagent', superagentRoutes);
 app.use('/api/executor', smartExecutorRoutes);
+app.use('/api/zapier', zapierIntegrationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
