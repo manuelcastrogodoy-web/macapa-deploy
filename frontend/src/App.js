@@ -15,6 +15,7 @@ import ZapierConfig from './pages/ZapierConfig';
 import AITest from './pages/AITest';
 import Settings from './pages/Settings';
 import NewReport from './pages/NewReport';
+import ClickUpConfig from './pages/ClickUpConfig';
 
 // Create theme
 const theme = createTheme({
@@ -124,6 +125,7 @@ function App() {
                   <Route path="/zapier" element={<ZapierConfig />} />
                   <Route path="/ai-test" element={<AITest />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/clickup" element={<ClickUpConfig />} />
                 </Routes>
               </Box>
             </Box>

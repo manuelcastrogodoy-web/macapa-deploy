@@ -18,6 +18,7 @@ import {
   Psychology as AIIcon,
   IntegrationInstructions as ZapierIcon,
   Analytics as AnalyticsIcon,
+  CloudSync as ClickUpIcon,
 } from '@mui/icons-material';
 
 const drawerWidth = 240;
@@ -43,6 +44,11 @@ const menuItems = [
     text: 'Zapier Config',
     icon: <ZapierIcon />,
     path: '/zapier',
+  },
+  {
+    text: 'ClickUp',
+    icon: <ClickUpIcon />,
+    path: '/clickup',
   },
 ];
 
