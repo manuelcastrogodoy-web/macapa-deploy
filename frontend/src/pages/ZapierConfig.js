@@ -53,9 +53,10 @@ const ZapierConfig = () => {
   const [testResult, setTestResult] = useState(null);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
 
-  // Configuración del webhook
-  const baseWebhookUrl = `${window.location.origin}/api/webhooks/zapier/agent-activity`;
-  const testWebhookUrl = `${window.location.origin}/api/webhooks/zapier/test`;
+  // Configuración del webhook - URLs del Backend API
+  const API_BASE_URL = 'https://manu-macapa-api-gmi6.onrender.com';
+  const baseWebhookUrl = `${API_BASE_URL}/api/webhooks/zapier/agent-activity`;
+  const testWebhookUrl = `${API_BASE_URL}/api/webhooks/zapier/test`;
 
   const handleCopyUrl = (url) => {
     navigator.clipboard.writeText(url);
@@ -65,7 +66,7 @@ const ZapierConfig = () => {
   const handleTestConnection = async () => {
     setIsTestingConnection(true);
     try {
-      const response = await axios.get('/api/webhooks/zapier/test');
+      const response = await axios.get(`${API_BASE_URL}/api/webhooks/zapier/test`);
       setTestResult({
         success: true,
         data: response.data,
@@ -103,7 +104,7 @@ const ZapierConfig = () => {
 
     setIsTestingConnection(true);
     try {
-      const response = await axios.post('/api/webhooks/zapier/agent-activity', testPayload);
+      const response = await axios.post(`${API_BASE_URL}/api/webhooks/zapier/agent-activity`, testPayload);
       setTestResult({
         success: true,
         data: response.data,

@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import moment from 'moment';
+import { API_CONFIG, ENDPOINTS } from '../config/api';
 
 // API function
 const fetchReports = async (filters) => {
@@ -36,7 +37,7 @@ const fetchReports = async (filters) => {
     if (value) params.append(key, value);
   });
   
-  const response = await axios.get(`/api/reports?${params.toString()}`);
+  const response = await axios.get(`${API_CONFIG.apiUrl}${ENDPOINTS.REPORTS}?${params.toString()}`);
   return response.data;
 };
 

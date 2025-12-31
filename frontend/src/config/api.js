@@ -4,7 +4,7 @@ const config = {
     apiUrl: 'http://localhost:3001',
   },
   production: {
-    apiUrl: process.env.REACT_APP_API_URL || 'https://manu-macapa-api.onrender.com',
+    apiUrl: process.env.REACT_APP_API_URL || 'https://manu-macapa-api-gmi6.onrender.com',
   }
 };
 

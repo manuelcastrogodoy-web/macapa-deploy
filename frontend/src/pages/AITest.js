@@ -28,6 +28,7 @@ import {
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 import moment from 'moment';
+import { API_CONFIG, ENDPOINTS } from '../config/api';
 
 const AITest = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -68,7 +69,7 @@ const AITest = () => {
   const handleTestConnection = async () => {
     setIsGenerating(true);
     try {
-      const response = await axios.post('/api/ai/test');
+      const response = await axios.post(`${API_CONFIG.apiUrl}${ENDPOINTS.AI_TEST}`);
       setConnectionStatus({
         success: true,
         data: response.data
@@ -104,7 +105,7 @@ const AITest = () => {
         timestamp: new Date().toISOString()
       };
 
-      const response = await axios.post('/api/ai/generate', payload);
+      const response = await axios.post(`${API_CONFIG.apiUrl}${ENDPOINTS.AI_GENERATE}`, payload);
       
       setResult({
         success: true,

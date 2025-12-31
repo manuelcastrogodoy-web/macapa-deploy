@@ -38,10 +38,11 @@ import {
   Line,
 } from 'recharts';
 import axios from 'axios';
+import { API_CONFIG, ENDPOINTS } from '../config/api';
 
 // API functions
 const fetchDashboardStats = async () => {
-  const response = await axios.get('/api/reports/stats/dashboard');
+  const response = await axios.get(`${API_CONFIG.apiUrl}${ENDPOINTS.REPORTS_STATS}`);
   return response.data.data;
 };
 
