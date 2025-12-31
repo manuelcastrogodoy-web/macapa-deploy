@@ -8,6 +8,7 @@ require('dotenv').config();
 const webhookRoutes = require('./routes/webhooks');
 const reportsRoutes = require('./routes/reports');
 const aiRoutes = require('./routes/ai');
+const dashboardRoutes = require('./routes/dashboard');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -52,6 +53,7 @@ app.get('/health', (req, res) => {
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
