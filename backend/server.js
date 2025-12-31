@@ -8,12 +8,10 @@ require('dotenv').config();
 const webhookRoutes = require('./routes/webhooks');
 const reportsRoutes = require('./routes/reports');
 const aiRoutes = require('./routes/ai');
-const dashboardRoutes = require('./routes/dashboard');
-const clickupRoutes = require('./routes/clickup');
-const orchestratorRoutes = require('./routes/orchestrator');
 const superagentRoutes = require('./routes/superagent');
-const smartExecutorRoutes = require('./routes/smartexecutor');
-const zapierIntegrationRoutes = require('./routes/zapier-integration');
+const clickupRoutes = require('./routes/clickup');
+const zapierRoutes = require('./routes/zapier');
+const orchestratorRoutes = require('./routes/orchestrator');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -34,7 +32,7 @@ app.use('/api/', limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', '*'],
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -50,7 +48,50 @@ app.get('/health', (req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    services: {
+      superAgent: 'active',
+      ai: 'active',
+      webhooks: 'active'
+    }
+  });
+});
+
+// Root endpoint with API documentation
+app.get('/', (req, res) => {
+  res.json({
+    name: 'MACAPA API',
+    version: '2.0.0',
+    description: 'Sistema de Auditoría Forense con Super Agente Inteligente',
+    endpoints: {
+      health: '/health',
+      superagent: {
+        process: 'POST /api/superagent/process',
+        alpha: 'POST /api/superagent/alpha',
+        omega: 'POST /api/superagent/omega',
+        audit: 'POST /api/superagent/audit',
+        task: 'POST /api/superagent/task',
+        report: 'POST /api/superagent/report',
+        status: 'GET /api/superagent/status',
+        stats: 'GET /api/superagent/stats',
+        mode: 'PUT /api/superagent/mode',
+        analyze: 'POST /api/superagent/analyze',
+        webhook: 'POST /api/superagent/webhook'
+      },
+      ai: {
+        generate: 'POST /api/ai/generate',
+        audit: 'POST /api/ai/audit'
+      },
+      webhooks: {
+        zapier: 'POST /api/webhooks/zapier',
+        clickup: 'POST /api/webhooks/clickup'
+      },
+      reports: {
+        create: 'POST /api/reports',
+        list: 'GET /api/reports'
+      }
+    },
+    documentation: 'https://github.com/manuelcastrogodoy-web/macapa-deploy'
   });
 });
 
@@ -58,18 +99,23 @@ app.get('/health', (req, res) => {
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/clickup', clickupRoutes);
-app.use('/api/orchestrator', orchestratorRoutes);
 app.use('/api/superagent', superagentRoutes);
-app.use('/api/executor', smartExecutorRoutes);
-app.use('/api/zapier', zapierIntegrationRoutes);
+app.use('/api/clickup', clickupRoutes);
+app.use('/api/zapier', zapierRoutes);
+app.use('/api/orchestrator', orchestratorRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Endpoint not found',
-    message: `Cannot ${req.method} ${req.originalUrl}`
+    message: `Cannot ${req.method} ${req.originalUrl}`,
+    availableEndpoints: [
+      '/health',
+      '/api/superagent/*',
+      '/api/ai/*',
+      '/api/webhooks/*',
+      '/api/reports/*'
+    ]
   });
 });
 
@@ -98,7 +144,9 @@ process.on('SIGINT', () => {
 app.listen(PORT, () => {
   logger.info(`🚀 MACAPA Backend Server running on port ${PORT}`);
   logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
+  logger.info(`🤖 SuperAgent: Active`);
   logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
+  logger.info(`📚 API Docs: http://localhost:${PORT}/`);
 });
 
 module.exports = app;

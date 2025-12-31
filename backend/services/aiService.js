@@ -3,9 +3,14 @@ const logger = require('../utils/logger');
 
 class AIService {
   constructor() {
+    this.isAvailable = false;
+    
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY is required');
+      console.warn('GEMINI_API_KEY not configured - AI features will be limited');
+      return;
     }
+    
+    this.isAvailable = true;
     
     this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     this.model = this.genAI.getGenerativeModel({ 

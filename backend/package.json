@@ -1,7 +1,7 @@
 {
   "name": "macapa-backend",
-  "version": "1.0.0",
-  "description": "MACAPA Backend API with Zapier Integration",
+  "version": "2.0.0",
+  "description": "MACAPA Backend API with Super Agent, ClickUp, and Zapier Integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,13 +20,28 @@
     "moment": "^2.29.4",
     "winston": "^3.11.0",
     "express-rate-limit": "^7.1.5",
-    "joi": "^17.11.0"
+    "joi": "^17.11.0",
+    "crypto": "^1.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
     "jest": "^29.7.0"
   },
-  "keywords": ["zapier", "webhook", "ai", "gemini", "audit", "forensic"],
+  "keywords": [
+    "zapier", 
+    "webhook", 
+    "ai", 
+    "gemini", 
+    "audit", 
+    "forensic",
+    "clickup",
+    "super-agent",
+    "automation",
+    "orchestrator"
+  ],
   "author": "MACAPA Team",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }

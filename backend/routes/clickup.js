@@ -1,331 +1,330 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const clickUpService = require('../services/clickUpService');
+const logger = require('../utils/logger');
 
-// ClickUp API Configuration
-const CLICKUP_API_URL = 'https://api.clickup.com/api/v2';
-const CLICKUP_API_TOKEN = process.env.CLICKUP_API_TOKEN;
-const CLICKUP_TEAM_ID = process.env.CLICKUP_TEAM_ID;
+/**
+ * MACAPA ClickUp API Routes
+ */
 
-// Helper function for ClickUp API calls
-const clickupApi = axios.create({
-  baseURL: CLICKUP_API_URL,
-  headers: {
-    'Authorization': CLICKUP_API_TOKEN,
-    'Content-Type': 'application/json'
-  }
-});
-
-// Test ClickUp connection
-router.get('/test', async (req, res) => {
+/**
+ * GET /api/clickup/status
+ * Verifica el estado de conexión con ClickUp
+ */
+router.get('/status', async (req, res) => {
   try {
-    if (!CLICKUP_API_TOKEN) {
-      return res.json({
-        success: false,
-        error: 'CLICKUP_API_TOKEN not configured',
-        message: 'Please configure the ClickUp API token in environment variables'
-      });
-    }
-
-    const response = await clickupApi.get('/user');
-    res.json({
-      success: true,
-      message: 'ClickUp connection successful',
-      user: response.data.user
-    });
+    const status = await clickUpService.checkConnection();
+    res.json(status);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
+    logger.error('ClickUp status error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Get ClickUp workspaces (teams)
+/**
+ * GET /api/clickup/workspaces
+ * Obtiene los workspaces disponibles
+ */
 router.get('/workspaces', async (req, res) => {
   try {
-    const response = await clickupApi.get('/team');
-    res.json({
-      success: true,
-      workspaces: response.data.teams
-    });
+    const workspaces = await clickUpService.getWorkspaces();
+    res.json({ success: true, workspaces });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
+    logger.error('ClickUp workspaces error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Get spaces in a workspace
-router.get('/workspaces/:teamId/spaces', async (req, res) => {
+/**
+ * GET /api/clickup/spaces/:teamId
+ * Obtiene los spaces de un workspace
+ */
+router.get('/spaces/:teamId', async (req, res) => {
   try {
-    const { teamId } = req.params;
-    const response = await clickupApi.get(`/team/${teamId}/space`);
-    res.json({
-      success: true,
-      spaces: response.data.spaces
-    });
+    const spaces = await clickUpService.getSpaces(req.params.teamId);
+    res.json({ success: true, spaces });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
+    logger.error('ClickUp spaces error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Get folders in a space
-router.get('/spaces/:spaceId/folders', async (req, res) => {
+/**
+ * GET /api/clickup/lists/:spaceId
+ * Obtiene las listas de un space
+ */
+router.get('/lists/:spaceId', async (req, res) => {
   try {
-    const { spaceId } = req.params;
-    const response = await clickupApi.get(`/space/${spaceId}/folder`);
-    res.json({
-      success: true,
-      folders: response.data.folders
-    });
+    const lists = await clickUpService.getLists(req.params.spaceId);
+    res.json({ success: true, lists });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
+    logger.error('ClickUp lists error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Get lists in a folder
-router.get('/folders/:folderId/lists', async (req, res) => {
-  try {
-    const { folderId } = req.params;
-    const response = await clickupApi.get(`/folder/${folderId}/list`);
-    res.json({
-      success: true,
-      lists: response.data.lists
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Create a task in ClickUp (for syncing reports)
+/**
+ * POST /api/clickup/tasks
+ * Crea una nueva tarea
+ */
 router.post('/tasks', async (req, res) => {
   try {
-    const { listId, name, description, priority, dueDate, tags } = req.body;
+    const { listId, ...taskData } = req.body;
     
-    const taskData = {
-      name,
-      description,
-      priority: priority === 'alta' ? 1 : priority === 'media' ? 2 : 3,
-      due_date: dueDate ? new Date(dueDate).getTime() : null,
-      tags: tags || ['MACAPA']
-    };
-
-    const response = await clickupApi.post(`/list/${listId}/task`, taskData);
-    res.json({
-      success: true,
-      task: response.data
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Update a task in ClickUp
-router.put('/tasks/:taskId', async (req, res) => {
-  try {
-    const { taskId } = req.params;
-    const { name, description, status, priority } = req.body;
-    
-    const updateData = {};
-    if (name) updateData.name = name;
-    if (description) updateData.description = description;
-    if (status) updateData.status = status;
-    if (priority) updateData.priority = priority === 'alta' ? 1 : priority === 'media' ? 2 : 3;
-
-    const response = await clickupApi.put(`/task/${taskId}`, updateData);
-    res.json({
-      success: true,
-      task: response.data
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Get task details
-router.get('/tasks/:taskId', async (req, res) => {
-  try {
-    const { taskId } = req.params;
-    const response = await clickupApi.get(`/task/${taskId}`);
-    res.json({
-      success: true,
-      task: response.data
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Webhook endpoint to receive ClickUp events
-router.post('/webhook', async (req, res) => {
-  try {
-    const event = req.body;
-    
-    console.log('ClickUp Webhook received:', JSON.stringify(event, null, 2));
-    
-    // Process different event types
-    switch (event.event) {
-      case 'taskCreated':
-        console.log('New task created in ClickUp:', event.task_id);
-        // TODO: Sync to MACAPA if needed
-        break;
-      
-      case 'taskUpdated':
-        console.log('Task updated in ClickUp:', event.task_id);
-        // TODO: Update corresponding report in MACAPA
-        break;
-      
-      case 'taskStatusUpdated':
-        console.log('Task status changed:', event.task_id, event.history_items);
-        // TODO: Update report status in MACAPA
-        break;
-      
-      case 'taskDeleted':
-        console.log('Task deleted in ClickUp:', event.task_id);
-        break;
-      
-      default:
-        console.log('Unknown event type:', event.event);
+    if (!taskData.name) {
+      return res.status(400).json({ error: 'Task name is required' });
     }
-    
-    res.json({ success: true, received: true });
+
+    const result = await clickUpService.createTask(taskData, listId);
+    res.json(result);
   } catch (error) {
-    console.error('ClickUp webhook error:', error);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    logger.error('ClickUp create task error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Create webhook in ClickUp
-router.post('/webhooks/create', async (req, res) => {
+/**
+ * GET /api/clickup/tasks/:listId
+ * Obtiene tareas de una lista
+ */
+router.get('/tasks/:listId', async (req, res) => {
+  try {
+    const tasks = await clickUpService.getTasks(req.params.listId, req.query);
+    res.json({ success: true, tasks });
+  } catch (error) {
+    logger.error('ClickUp get tasks error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/clickup/task/:taskId
+ * Obtiene una tarea específica
+ */
+router.get('/task/:taskId', async (req, res) => {
+  try {
+    const task = await clickUpService.getTask(req.params.taskId);
+    res.json({ success: true, task });
+  } catch (error) {
+    logger.error('ClickUp get task error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * PUT /api/clickup/task/:taskId
+ * Actualiza una tarea
+ */
+router.put('/task/:taskId', async (req, res) => {
+  try {
+    const result = await clickUpService.updateTask(req.params.taskId, req.body);
+    res.json(result);
+  } catch (error) {
+    logger.error('ClickUp update task error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/clickup/task/:taskId/subtask
+ * Crea una subtarea
+ */
+router.post('/task/:taskId/subtask', async (req, res) => {
+  try {
+    const result = await clickUpService.createSubtask(req.params.taskId, req.body);
+    res.json(result);
+  } catch (error) {
+    logger.error('ClickUp create subtask error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/clickup/task/:taskId/comment
+ * Agrega un comentario a una tarea
+ */
+router.post('/task/:taskId/comment', async (req, res) => {
+  try {
+    const { text, notifyAll } = req.body;
+    
+    if (!text) {
+      return res.status(400).json({ error: 'Comment text is required' });
+    }
+
+    const result = await clickUpService.addComment(req.params.taskId, text, notifyAll);
+    res.json(result);
+  } catch (error) {
+    logger.error('ClickUp add comment error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/clickup/tasks/batch
+ * Crea múltiples tareas
+ */
+router.post('/tasks/batch', async (req, res) => {
+  try {
+    const { tasks, listId } = req.body;
+    
+    if (!tasks || !Array.isArray(tasks)) {
+      return res.status(400).json({ error: 'Tasks array is required' });
+    }
+
+    const results = await clickUpService.createTasksBatch(tasks, listId);
+    res.json({ success: true, results });
+  } catch (error) {
+    logger.error('ClickUp batch create error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/clickup/project
+ * Crea una estructura de proyecto completa
+ */
+router.post('/project', async (req, res) => {
+  try {
+    const { projectName, client, type, tasks } = req.body;
+    
+    if (!projectName) {
+      return res.status(400).json({ error: 'Project name is required' });
+    }
+
+    const result = await clickUpService.createProjectStructure({
+      projectName,
+      client: client || 'Sin cliente',
+      type: type || 'general',
+      tasks: tasks || []
+    });
+    
+    res.json({ success: true, ...result });
+  } catch (error) {
+    logger.error('ClickUp create project error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/clickup/search
+ * Busca tareas
+ */
+router.get('/search', async (req, res) => {
+  try {
+    const { q, teamId } = req.query;
+    
+    if (!q) {
+      return res.status(400).json({ error: 'Query parameter q is required' });
+    }
+
+    const tasks = await clickUpService.searchTasks(q, teamId);
+    res.json({ success: true, tasks, count: tasks.length });
+  } catch (error) {
+    logger.error('ClickUp search error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * GET /api/clickup/stats
+ * Obtiene estadísticas del workspace
+ */
+router.get('/stats', async (req, res) => {
+  try {
+    const { teamId } = req.query;
+    const stats = await clickUpService.getWorkspaceStats(teamId);
+    res.json({ success: true, ...stats });
+  } catch (error) {
+    logger.error('ClickUp stats error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/clickup/webhook
+ * Crea un webhook
+ */
+router.post('/webhook', async (req, res) => {
   try {
     const { teamId, endpoint, events } = req.body;
     
-    const webhookData = {
-      endpoint: endpoint || `${process.env.API_URL || 'https://manu-macapa-api-gmi6.onrender.com'}/api/clickup/webhook`,
-      events: events || [
-        'taskCreated',
-        'taskUpdated',
-        'taskDeleted',
-        'taskStatusUpdated',
-        'taskCommentPosted'
-      ]
-    };
-
-    const response = await clickupApi.post(`/team/${teamId || CLICKUP_TEAM_ID}/webhook`, webhookData);
-    res.json({
-      success: true,
-      webhook: response.data
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Get webhooks
-router.get('/webhooks', async (req, res) => {
-  try {
-    const teamId = req.query.teamId || CLICKUP_TEAM_ID;
-    const response = await clickupApi.get(`/team/${teamId}/webhook`);
-    res.json({
-      success: true,
-      webhooks: response.data.webhooks
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Delete webhook
-router.delete('/webhooks/:webhookId', async (req, res) => {
-  try {
-    const { webhookId } = req.params;
-    await clickupApi.delete(`/webhook/${webhookId}`);
-    res.json({
-      success: true,
-      message: 'Webhook deleted successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
-  }
-});
-
-// Sync report to ClickUp (create task from MACAPA report)
-router.post('/sync/report', async (req, res) => {
-  try {
-    const { report, listId } = req.body;
-    
-    if (!listId) {
-      return res.status(400).json({
-        success: false,
-        error: 'listId is required'
-      });
+    if (!endpoint) {
+      return res.status(400).json({ error: 'Endpoint URL is required' });
     }
 
-    const taskData = {
-      name: `[MACAPA] ${report.title}`,
-      description: `
-**Cliente:** ${report.client}
-**Tipo:** ${report.type}
-**Prioridad:** ${report.priority}
-**Estado:** ${report.status}
+    const result = await clickUpService.createWebhook(teamId, endpoint, events);
+    res.json(result);
+  } catch (error) {
+    logger.error('ClickUp create webhook error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
----
+/**
+ * GET /api/clickup/webhooks
+ * Lista webhooks
+ */
+router.get('/webhooks', async (req, res) => {
+  try {
+    const { teamId } = req.query;
+    const webhooks = await clickUpService.getWebhooks(teamId);
+    res.json({ success: true, webhooks });
+  } catch (error) {
+    logger.error('ClickUp get webhooks error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
-${report.description || ''}
+/**
+ * DELETE /api/clickup/webhook/:webhookId
+ * Elimina un webhook
+ */
+router.delete('/webhook/:webhookId', async (req, res) => {
+  try {
+    const result = await clickUpService.deleteWebhook(req.params.webhookId);
+    res.json(result);
+  } catch (error) {
+    logger.error('ClickUp delete webhook error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
----
+/**
+ * POST /api/clickup/webhook/incoming
+ * Recibe webhooks de ClickUp
+ */
+router.post('/webhook/incoming', async (req, res) => {
+  try {
+    logger.info('ClickUp webhook received:', {
+      event: req.body.event,
+      taskId: req.body.task_id
+    });
 
-*Sincronizado desde MACAPA*
-      `.trim(),
-      priority: report.priority === 'alta' ? 1 : report.priority === 'media' ? 2 : 3,
-      tags: ['MACAPA', report.type]
-    };
+    // Procesar el webhook según el evento
+    const { event, task_id, history_items } = req.body;
 
-    const response = await clickupApi.post(`/list/${listId}/task`, taskData);
-    
-    res.json({
-      success: true,
-      message: 'Report synced to ClickUp',
-      task: response.data
+    // Aquí puedes agregar lógica para procesar diferentes eventos
+    // Por ejemplo, sincronizar con Zapier o actualizar el estado del SuperAgent
+
+    res.json({ 
+      success: true, 
+      message: 'Webhook received',
+      event,
+      taskId: task_id
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.response?.data || error.message
-    });
+    logger.error('ClickUp incoming webhook error:', error);
+    res.status(500).json({ error: error.message });
   }
+});
+
+/**
+ * DELETE /api/clickup/cache
+ * Limpia el cache
+ */
+router.delete('/cache', (req, res) => {
+  clickUpService.clearCache();
+  res.json({ success: true, message: 'Cache cleared' });
 });
 
 module.exports = router;
