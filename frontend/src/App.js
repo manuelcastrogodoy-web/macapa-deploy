@@ -14,6 +14,7 @@ import ReportDetail from './pages/ReportDetail';
 import ZapierConfig from './pages/ZapierConfig';
 import AITest from './pages/AITest';
 import Settings from './pages/Settings';
+import NewReport from './pages/NewReport';
 
 // Create theme
 const theme = createTheme({
@@ -118,6 +119,7 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/reports" element={<Reports />} />
+                  <Route path="/reports/new" element={<NewReport />} />
                   <Route path="/reports/:id" element={<ReportDetail />} />
                   <Route path="/zapier" element={<ZapierConfig />} />
                   <Route path="/ai-test" element={<AITest />} />

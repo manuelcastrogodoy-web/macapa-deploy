@@ -28,8 +28,10 @@ import axios from 'axios';
 import moment from 'moment';
 
 // API function
+const API_URL = process.env.REACT_APP_API_URL || 'https://manu-macapa-api-gmi6.onrender.com';
+
 const fetchReport = async (id) => {
-  const response = await axios.get(`/api/reports/${id}`);
+  const response = await axios.get(`${API_URL}/api/reports/${id}`);
   return response.data.data;
 };
 

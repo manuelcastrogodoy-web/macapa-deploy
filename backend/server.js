@@ -9,6 +9,8 @@ const webhookRoutes = require('./routes/webhooks');
 const reportsRoutes = require('./routes/reports');
 const aiRoutes = require('./routes/ai');
 const dashboardRoutes = require('./routes/dashboard');
+const clickupRoutes = require('./routes/clickup');
+const orchestratorRoutes = require('./routes/orchestrator');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -54,6 +56,8 @@ app.use('/api/webhooks', webhookRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/clickup', clickupRoutes);
+app.use('/api/orchestrator', orchestratorRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
