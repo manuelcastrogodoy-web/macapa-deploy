@@ -1,0 +1,81 @@
+# MACAPA Platform - Render FREE Tier Configuration
+# Cost: $0/month - Preserves 300 credits
+
+services:
+  # Backend API - FREE TIER
+  - type: web
+    name: manu-macapa-api-gmi6
+    env: node
+    plan: free
+    region: oregon
+    
+    buildCommand: cd backend && npm ci --only=production --no-audit --no-fund
+    startCommand: cd backend && node server.js
+    
+    healthCheckPath: /health
+    
+    envVars:
+      - key: NODE_ENV
+        value: production
+      
+      - key: PORT
+        value: 10000
+      
+      # FREE tier optimizations
+      - key: OPTIMIZE_FOR_FREE_TIER
+        value: true
+      
+      - key: ENABLE_KEEP_ALIVE
+        value: true
+      
+      - key: RENDER_EXTERNAL_URL
+        value: https://manu-macapa-api-gmi6.onrender.com
+      
+      - key: KEEP_ALIVE_INTERVAL
+        value: 840000  # 14 minutes in ms
+      
+      - key: KEEP_ALIVE_ENDPOINT
+        value: /health
+      
+      # Memory limits for FREE tier (512MB)
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=400
+      
+      # Rate limiting for FREE tier
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000  # 15 minutes
+      
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 50
+      
+      # Logging
+      - key: LOG_LEVEL
+        value: warn
+      
+      # Security (keep existing)
+      - key: JWT_SECRET
+        sync: false
+      
+      - key: SESSION_SECRET
+        sync: false
+      
+      # AI Configuration (keep existing)
+      - key: OPENAI_API_KEY
+        sync: false
+      
+      # ClickUp (keep existing)
+      - key: CLICKUP_API_KEY
+        sync: false
+      
+      - key: CLICKUP_TEAM_ID
+        sync: false
+      
+      - key: CLICKUP_SPACE_ID
+        sync: false
+      
+      - key: CLICKUP_LIST_ID
+        sync: false
+      
+      # Zapier (keep existing)
+      - key: ZAPIER_WEBHOOK_URL
+        sync: false

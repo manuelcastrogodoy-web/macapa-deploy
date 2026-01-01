@@ -13,6 +13,7 @@ const clickupRoutes = require('./routes/clickup');
 const zapierRoutes = require('./routes/zapier');
 const orchestratorRoutes = require('./routes/orchestrator');
 const logger = require('./utils/logger');
+const { keepAlive, healthMiddleware, statsRoute } = require('./utils/keepAlive');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -41,6 +42,9 @@ app.use(cors(corsOptions));
 // Body parsing middleware
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+// Keep-alive middleware for FREE tier
+app.use(healthMiddleware);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -94,6 +98,9 @@ app.get('/', (req, res) => {
     documentation: 'https://github.com/manuelcastrogodoy-web/macapa-deploy'
   });
 });
+
+// Keep-alive stats endpoint
+app.get('/api/keep-alive/stats', statsRoute);
 
 // API Routes
 app.use('/api/webhooks', webhookRoutes);
